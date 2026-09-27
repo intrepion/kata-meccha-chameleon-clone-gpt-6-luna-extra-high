@@ -29,6 +29,12 @@ Open index.html in a modern desktop browser. The Three.js runtime is included lo
 
 Paint Mode freezes movement and moves the camera into close-up view. Use the color chips, adjust the brush, and paint around your body. The seekers use sight lines; covering your body, matching nearby colors, and staying still make you harder to spot.
 
+## Movement checks
+
+Run the movement regression checks with:
+
+    node --test tests/controls-repro.test.cjs
+
 ## Scope
 
 This is a local single-player recreation with seeker and hider bots. The original game's online matchmaking, multiplayer rooms, user-made maps, and network play are not included.
