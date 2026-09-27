@@ -62,6 +62,10 @@
     .panel-head strong { font-size:14px; }
     .panel-head .micro { font-size:9px; color:var(--acid); margin-bottom:4px; }
     .panel-copy { color:#aeb9b2; font-size:11px; line-height:1.5; margin-bottom:14px; }
+    .paint-tools { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:14px; }
+    .paint-tool { border:1px solid #ffffff35; background:#ffffff0b; padding:9px 8px; color:#aeb9b2; font:9px ui-monospace,Menlo,monospace; text-transform:uppercase; cursor:pointer; }
+    .paint-tool.active { border-color:var(--acid); color:var(--acid); background:#d4ff4f12; }
+    .paint-tool:focus-visible { outline:2px solid var(--acid); outline-offset:2px; }
     .swatches { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; }
     .swatch { aspect-ratio:1; border:1px solid #ffffff55; cursor:pointer; position:relative; transition:transform .12s ease; }
     .swatch:hover { transform:scale(1.08); }
@@ -152,11 +156,15 @@
   </div>
   <div id="paint-panel">
     <div class="panel-head"><div><div class="micro">BODY PAINT</div><strong>Match the room.</strong></div><div class="micro">P / ESC</div></div>
-    <div class="panel-copy">Pick a color, then paint directly onto your body. Right-click a surface to sample its color. Right-drag to turn around.</div>
+    <div class="panel-copy">Choose Brush to mark your body or Orbit to move the camera. Right-click a room surface to sample its color.</div>
+    <div class="paint-tools" role="group" aria-label="Paint tool">
+      <button class="paint-tool active" id="paint-tool-brush" type="button" aria-pressed="true">Brush · B</button>
+      <button class="paint-tool" id="paint-tool-orbit" type="button" aria-pressed="false">Orbit · R</button>
+    </div>
     <div class="swatches" id="swatches"></div>
     <div class="brush-row"><label for="brush">Brush size</label><input id="brush" type="range" min="8" max="80" value="30"></div>
     <div class="panel-actions"><button class="subtle" id="undo">Undo mark</button><button class="subtle" id="wipe">Start over</button></div>
-    <div class="close-note">Aim at your body · drag to paint</div>
+    <div class="close-note" id="paint-help">Aim at your body · drag to paint · right-drag to orbit</div>
   </div>
   <div id="crosshair"></div><div class="toast" id="toast"></div><div class="seek-ping" id="seek-ping"></div>
   <script src="vendor-three.min.js"></script>
@@ -203,6 +211,7 @@
     var roundLength = 70;
     var caught = 0;
     var paintMode = false;
+    var paintTool = 'brush';
     var paused = false;
     var drag = false;
     var dragLast = { x:0, y:0 };
@@ -577,7 +586,21 @@
     function startPaintMode() {
       if(!player||selectedRole!=='hider'||(phase!=='prep'&&phase!=='hide'))return;
       paintMode=true;drag=false;document.getElementById('paint-panel').style.display='block';document.getElementById('crosshair').style.display='block';
-      cameraPitch=-.05;showToast('Brush on. Paint every side of your body.');
+      paintTool='brush';updatePaintToolButtons();cameraPitch=.08;showToast('Brush on. Select Orbit to move the camera.');
+    }
+    function updatePaintToolButtons() {
+      var brush=document.getElementById('paint-tool-brush'),orbit=document.getElementById('paint-tool-orbit');
+      brush.classList.toggle('active',paintTool==='brush');orbit.classList.toggle('active',paintTool==='orbit');
+      brush.setAttribute('aria-pressed',paintTool==='brush'?'true':'false');orbit.setAttribute('aria-pressed',paintTool==='orbit'?'true':'false');
+      document.getElementById('paint-help').textContent=paintTool==='brush'?'Aim at your body · drag to paint · right-drag to orbit':'Drag to orbit · right-click a room surface to sample';
+    }
+    function setPaintTool(tool) {
+      paintTool=tool;updatePaintToolButtons();
+      showToast(tool==='orbit'?'Orbit camera. Drag to turn and tilt.':'Brush on. Drag across your body to paint.');
+    }
+    function orbitPaintCamera(dx,dy) {
+      cameraYaw-=dx*.006;cameraPitch=Math.max(-.55,Math.min(.9,cameraPitch-dy*.005));
+      updateCamera(0);camera.updateMatrixWorld(true);
     }
     function stopPaintMode() {
       paintMode=false;drag=false;document.getElementById('paint-panel').style.display='none';document.getElementById('crosshair').style.display='none';
@@ -585,9 +608,8 @@
     function updateCamera(dt) {
       if(!player)return;
       var target=player.root.position.clone();target.y+=paintMode?1.1:1.16;
-      var dist=paintMode?3.3:6.3,pitch=paintMode?-.02:cameraPitch,horizontal=Math.cos(pitch)*dist;
-      camera.position.set(target.x+Math.sin(cameraYaw)*horizontal,target.y+Math.sin(pitch)*dist+1.05,target.z+Math.cos(cameraYaw)*horizontal);
-      if(paintMode)camera.position.y=target.y+.25;
+      var dist=paintMode?3.3:6.3,pitch=cameraPitch,horizontal=Math.cos(pitch)*dist,heightOffset=paintMode?0:1.05;
+      camera.position.set(target.x+Math.sin(cameraYaw)*horizontal,target.y+Math.sin(pitch)*dist+heightOffset,target.z+Math.cos(cameraYaw)*horizontal);
       camera.lookAt(target);
       if(moveInputEmpty()&&!paintMode&&!paused&&phase!=='menu') {
         var diff=Math.atan2(Math.sin(cameraYaw-player.root.rotation.y),Math.cos(cameraYaw-player.root.rotation.y));
@@ -678,6 +700,7 @@
       });
     }
     function paintAt(clientX,clientY,sampleOnly) {
+      updateCamera(0);camera.updateMatrixWorld(true);
       pointer.x=(clientX/window.innerWidth)*2-1;pointer.y=-(clientY/window.innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);
       var hits=raycaster.intersectObjects(sampleOnly?worldMeshes:player.parts.concat(worldMeshes),false);
       if(!hits.length)return;
@@ -783,10 +806,14 @@
     document.getElementById('quit').addEventListener('click',function(){paused=false;phase='menu';stopPaintMode();clearDynamicCharacters();document.getElementById('pause').style.display='none';document.getElementById('hud').style.display='none';document.getElementById('menu').style.display='flex';});
     document.getElementById('brush').addEventListener('input',function(e){brushSize=Number(e.target.value);});
     document.getElementById('undo').addEventListener('click',undoPaint);document.getElementById('wipe').addEventListener('click',wipePaint);
+    document.getElementById('paint-tool-brush').addEventListener('click',function(){setPaintTool('brush');});
+    document.getElementById('paint-tool-orbit').addEventListener('click',function(){setPaintTool('orbit');});
     document.addEventListener('keydown',function(e) {
       if(e.code==='Space')e.preventDefault();
       if(e.code==='Escape'){if(paintMode){stopPaintMode();return;}if(phase!=='menu'&&phase!=='over'){paused=!paused;if(paused)releaseInput();document.getElementById('pause').style.display=paused?'flex':'none';}return;}
       if(e.code==='KeyP'){if(paintMode)stopPaintMode();else startPaintMode();return;}
+      if(paintMode&&e.code==='KeyB'){setPaintTool('brush');return;}
+      if(paintMode&&e.code==='KeyR'){setPaintTool('orbit');return;}
       if(e.code==='KeyE'){tagNearest();return;}
       if(e.code==='KeyQ'){scannerPulse();return;}
       if(e.code==='Space'&&selectedRole==='seeker'){tagNearest();return;}
@@ -796,7 +823,7 @@
     canvas.addEventListener('pointerdown',function(e) {
       if(phase==='menu'||phase==='over'||paused)return;
       drag=true;dragLast.x=e.clientX;dragLast.y=e.clientY;
-      if(paintMode){if(e.button===2)paintAt(e.clientX,e.clientY,true);else if(e.button===0)paintAt(e.clientX,e.clientY,false);}
+      if(paintMode){if(e.button===2)paintAt(e.clientX,e.clientY,true);else if(e.button===0&&paintTool==='brush')paintAt(e.clientX,e.clientY,false);}
       else if(selectedRole==='seeker'&&phase==='seek'&&e.button===0)tagNearest();
       canvas.setPointerCapture(e.pointerId);
     });
@@ -804,8 +831,11 @@
       var cross=document.getElementById('crosshair');
       if(paintMode) {
         cross.style.left=e.clientX+'px';cross.style.top=e.clientY+'px';
-        if(drag&&e.buttons===2)cameraYaw-=(e.clientX-dragLast.x)*.006;
-        else if(drag&&(e.buttons&1))paintAt(e.clientX,e.clientY,false);
+        if(drag&&e.buttons===2)orbitPaintCamera(e.clientX-dragLast.x,e.clientY-dragLast.y);
+        else if(drag&&(e.buttons&1)) {
+          if(paintTool==='orbit')orbitPaintCamera(e.clientX-dragLast.x,e.clientY-dragLast.y);
+          else paintAt(e.clientX,e.clientY,false);
+        }
       } else if(drag&&e.buttons===1) {
         cameraYaw-=(e.clientX-dragLast.x)*.006;cameraPitch=Math.max(-.06,Math.min(.52,cameraPitch-(e.clientY-dragLast.y)*.003));
       }
