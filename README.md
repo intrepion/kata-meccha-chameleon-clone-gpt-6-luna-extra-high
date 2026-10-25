@@ -1,5 +1,9 @@
 # MECCHA CHAMELEON
 
+## Play online
+
+[Play MECCHA CHAMELEON](https://intrepion.github.io/kata-meccha-chameleon-clone-gpt-6-luna-extra-high/) — free, playable in your browser.
+
 A browser-playable 3D recreation of **Meccha Chameleon**'s paint-yourself hide-and-seek loop. The game is rendered in real time with Three.js and builds its room, characters, paint textures, lighting, and props from code.
 
 ## Play
