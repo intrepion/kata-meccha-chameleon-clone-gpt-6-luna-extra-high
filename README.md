@@ -46,3 +46,7 @@ This is a local single-player recreation with seeker and hider bots. The origina
 ## Third-party runtime
 
 The game includes the Three.js 0.152.2 browser build and its MIT license in vendor-three.min.js and vendor-three.LICENSE.txt.
+
+## Arcade metadata
+
+See [docs/arcade-metadata.md](docs/arcade-metadata.md) for the game-owned manifest and screenshot provenance.
