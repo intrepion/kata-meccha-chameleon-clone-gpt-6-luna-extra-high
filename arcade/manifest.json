@@ -1,6 +1,47 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "gameId": "kata-meccha-chameleon-clone-gpt-6-luna-extra-high",
   "playUrl": "https://intrepion.github.io/kata-meccha-chameleon-clone-gpt-6-luna-extra-high/",
-  "screenshots": []
+  "screenshots": [
+    {
+      "path": "arcade/screenshots/ci-20261102-01.jpg",
+      "sha256": "f5f603f04f61c7dea085d5c077d2018a833a9e8a1cb8374a92fe60e1eb569af4",
+      "alt": "MECCHA CHAMELEON gameplay, view 1",
+      "provenance": {
+        "kind": "ci_gameplay_capture",
+        "sourcePath": "arcade/capture-evidence/ci-20261102-01.png",
+        "sourceSha256": "c82fb69bb9f8a4cba4df3f7548994d1bd0f88cf190ac514a1827de436a7e6c5f",
+        "captureCommit": "e65db75133189a49b1dae60ad7bf348cb5a920c7",
+        "workflowRunId": "41422948424",
+        "inputHashes": {
+          "index.html": "db2be12c43b597e403d23680a7935e8f1296d563a44e02be2876b22f2ffbdc0b",
+          "movement.js": "43a04ff4401066972ac2ab7ec019d489fbd0c5fc816bc244ddd8d96d1b7a4382",
+          "vendor-three.min.js": "218b9f9420af1ee2b773fa066cee0eeb52f7ac76ca2fa11b11b732c1ba0a6e39"
+        },
+        "publishedFilesVerifiedAt": "2026-11-02T19:01:20Z",
+        "captureRecordPath": "arcade/capture-evidence/ci-20261102-record.json",
+        "captureRecordSha256": "bd99e4ed5037507d664e908d95fd5bc88c8e602ca4712d0e66add6a7ca1ad4dd"
+      }
+    },
+    {
+      "path": "arcade/screenshots/ci-20261102-02.jpg",
+      "sha256": "0796ab08926668712a5e58c92bfe9328408bdae6a55406ed6f633ea139b1e3c8",
+      "alt": "MECCHA CHAMELEON gameplay, view 2",
+      "provenance": {
+        "kind": "ci_gameplay_capture",
+        "sourcePath": "arcade/capture-evidence/ci-20261102-02.png",
+        "sourceSha256": "bc31be492e55c0a44b91010b4233484497384ca0610906e67bc04324c7ea0100",
+        "captureCommit": "e65db75133189a49b1dae60ad7bf348cb5a920c7",
+        "workflowRunId": "41422948424",
+        "inputHashes": {
+          "index.html": "db2be12c43b597e403d23680a7935e8f1296d563a44e02be2876b22f2ffbdc0b",
+          "movement.js": "43a04ff4401066972ac2ab7ec019d489fbd0c5fc816bc244ddd8d96d1b7a4382",
+          "vendor-three.min.js": "218b9f9420af1ee2b773fa066cee0eeb52f7ac76ca2fa11b11b732c1ba0a6e39"
+        },
+        "publishedFilesVerifiedAt": "2026-11-02T19:01:20Z",
+        "captureRecordPath": "arcade/capture-evidence/ci-20261102-record.json",
+        "captureRecordSha256": "bd99e4ed5037507d664e908d95fd5bc88c8e602ca4712d0e66add6a7ca1ad4dd"
+      }
+    }
+  ]
 }

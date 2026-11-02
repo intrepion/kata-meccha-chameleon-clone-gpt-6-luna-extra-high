@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "workflowCommit": "88990c6e67c864546c9474737d929d80aadd6a11",
+  "sourceCommit": "e65db75133189a49b1dae60ad7bf348cb5a920c7",
+  "runId": "41422948424",
+  "url": "http://127.0.0.1:4257/",
+  "inputs": {
+    "index.html": "db2be12c43b597e403d23680a7935e8f1296d563a44e02be2876b22f2ffbdc0b",
+    "movement.js": "43a04ff4401066972ac2ab7ec019d489fbd0c5fc816bc244ddd8d96d1b7a4382",
+    "vendor-three.min.js": "218b9f9420af1ee2b773fa066cee0eeb52f7ac76ca2fa11b11b732c1ba0a6e39"
+  },
+  "browser": "153.0.8010.12",
+  "viewport": {
+    "width": 1280,
+    "height": 1000
+  },
+  "screenshots": [
+    "meccha-luna-01.png",
+    "meccha-luna-02.png"
+  ]
+}
